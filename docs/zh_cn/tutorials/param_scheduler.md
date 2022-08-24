@@ -38,15 +38,15 @@ for epoch in range(10):
 from mmengine.optim.scheduler import MultiStepLR
 
 optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9)
-scheduler = MultiStepLR(optimizer, milestones=[8, 11], gamma=0.1)
+param_scheduler = MultiStepLR(optimizer, milestones=[8, 11], gamma=0.1)
 ```
 
 ![image](https://user-images.githubusercontent.com/12907710/185112707-356e1c20-d104-45b6-954c-55d552aab7ac.png)
 
-如果配合注册器和配置文件使用的话，我们可以设置配置文件中的 `scheduler` 字段来指定优化器, 执行器（Runner）会根据此字段以及执行器中的优化器自动构建学习率调度器：
+如果配合注册器和配置文件使用的话，我们可以设置配置文件中的 `param_scheduler` 字段来指定优化器, 执行器（Runner）会根据此字段以及执行器中的优化器自动构建学习率调度器：
 
 ```python
-scheduler = dict(type='MultiStepLR', by_epoch=True, milestones=[8, 11], gamma=0.1)
+param_scheduler = dict(type='MultiStepLR', by_epoch=True, milestones=[8, 11], gamma=0.1)
 ```
 
 注意这里增加了初始化参数 `by_epoch`，控制的是学习率调整频率，当其为 True 时表示按轮次（epoch） 调整，为 False 时表示按迭代次数（iteration）调整，默认值为 True。
@@ -55,7 +55,7 @@ scheduler = dict(type='MultiStepLR', by_epoch=True, milestones=[8, 11], gamma=0.
 当修改了学习率调整频率后，调度器中与计数相关设置的含义也会相应被改变。当 `by_epoch=True` 时，milestones 中的数字表示在哪些轮次进行学习率衰减，而当 `by_epoch=False` 时则表示在进行到第几次迭代时进行学习率衰减。下面是一个按照迭代次数进行调整的例子，在第 600 和 800 次迭代结束时，学习率将会被调整为原来的 0.1 倍。
 
 ```python
-scheduler = dict(type='MultiStepLR', by_epoch=False, milestones=[600, 800], gamma=0.1)
+param_scheduler = dict(type='MultiStepLR', by_epoch=False, milestones=[600, 800], gamma=0.1)
 ```
 
 ![image](https://user-images.githubusercontent.com/12907710/185112891-381b9fb6-cf00-42b8-8dcd-6fb636450c4d.png)
@@ -64,19 +64,19 @@ scheduler = dict(type='MultiStepLR', by_epoch=False, milestones=[600, 800], gamm
 
 ```python
 epoch_length = len(train_dataloader)
-scheduler = MultiStepLR.build_iter_from_epoch(optimizer, milestones=[8, 11], gamma=0.1, epoch_length=epoch_length)
+param_scheduler = MultiStepLR.build_iter_from_epoch(optimizer, milestones=[8, 11], gamma=0.1, epoch_length=epoch_length)
 ```
 
 如果使用配置文件构建调度器，只需要在配置中加入 `convert_to_iter_based=True`，执行器会自动调用 `build_iter_from_epoch` 将基于轮次的配置文件转换为基于迭代次数的调度器对象：
 
 ```python
-scheduler = dict(type='MultiStepLR', by_epoch=True, milestones=[8, 11], gamma=0.1, convert_to_iter_based=True)
+param_scheduler = dict(type='MultiStepLR', by_epoch=True, milestones=[8, 11], gamma=0.1, convert_to_iter_based=True)
 ```
 
 为了能直观感受这两种模式的区别，我们中这里再举一个例子。下面是一个按轮次更新的余弦退火（CosineAnnealing）学习率调度器，学习率仅在每个轮次结束后被修改：
 
 ```python
-scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12)
+param_scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12)
 ```
 
 ![image](https://user-images.githubusercontent.com/12907710/185115307-69e75a6e-0712-4770-bd41-b0290b03480c.png)
@@ -84,7 +84,7 @@ scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12)
 而在使用自动换算后，学习率会在每次迭代后被修改。从下图可以看出，学习率的变化更为平滑。
 
 ```python
-scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12, convert_to_iter_based=True)
+param_scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12, convert_to_iter_based=True)
 ```
 
 ![image](https://user-images.githubusercontent.com/12907710/185115509-d4f2156a-d940-44b7-801f-3023ab76a2d3.png)
@@ -93,10 +93,10 @@ scheduler = dict(type='CosineAnnealingLR', by_epoch=True, T_max=12, convert_to_i
 
 有些算法在训练过程中，并不是自始至终按照某个调度策略进行学习率调整的。最常见的例子是学习率预热，比如在训练刚开始的若干迭代次数使用线性的调整策略将学习率从一个较小的值增长到正常，然后按照另外的调整策略进行正常训练。
 
-MMEngine 支持组合多个调度器一起使用，只需将配置文件中的 `scheduler` 字段修改为一组调度器配置的列表，SchedulerStepHook 可以自动对调度器列表进行处理。下面的例子便实现了学习率预热。
+MMEngine 支持组合多个调度器一起使用，只需将配置文件中的 `param_scheduler` 字段修改为一组调度器配置的列表，ParamSchedulerHook 可以自动对调度器列表进行处理。下面的例子便实现了学习率预热。
 
 ```python
-scheduler = [
+param_scheduler = [
     # 线性学习率预热调度器
     dict(type='LinearLR',
          start_factor=0.001,
@@ -118,7 +118,7 @@ scheduler = [
 这里再举一个例子：
 
 ```python
-scheduler = [
+param_scheduler = [
     # 在 [0, 100) 迭代时使用线性学习率
     dict(type='LinearLR',
          start_factor=0.001,
@@ -146,12 +146,12 @@ scheduler = [
 
 ### 动量
 
-和学习率一样, 动量也是优化器参数组中一组可以调度的参数。 动量调度器（momentum scheduler）的使用方法和学习率调度器完全一样。同样也只需要将动量调度器的配置添加进配置文件中的 `scheduler` 字段的列表中即可。
+和学习率一样, 动量也是优化器参数组中一组可以调度的参数。 动量调度器（momentum scheduler）的使用方法和学习率调度器完全一样。同样也只需要将动量调度器的配置添加进配置文件中的 `param_scheduler` 字段的列表中即可。
 
 示例:
 
 ```python
-scheduler = [
+param_scheduler = [
     # the lr scheduler
     dict(type='LinearLR', ...),
     # the momentum scheduler
@@ -170,7 +170,7 @@ MMEngine 还提供了一组通用的参数调度器用于调度优化器的 `par
 下面是一个通过自定义参数名来调度的例子：
 
 ```python
-scheduler = [
+param_scheduler = [
     dict(type='LinearParamScheduler',
          param_name='lr',  # 调度 `optimizer.param_groups` 中名为 'lr' 的变量
          start_factor=0.001,
@@ -185,7 +185,7 @@ scheduler = [
 除了动量之外，用户也可以对 `optimizer.param_groups` 中的其他参数名进行调度，可调度的参数取决于所使用的优化器。 例如，当使用带 `weight_decay` 的 SGD 优化器时，可以按照以下示例对调整 `weight_decay`：
 
 ```python
-scheduler = [
+param_scheduler = [
     dict(type='LinearParamScheduler',
          param_name='weight_decay',  # 调度 `optimizer.param_groups` 中名为 'weight_decay' 的变量
          start_factor=0.001,
