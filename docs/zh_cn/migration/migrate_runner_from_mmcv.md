@@ -19,12 +19,11 @@ MMEngine 中的执行器扩大了作用域，也承担了更多的功能；我�
 <table class="docutils">
 <thead>
   <tr>
-    <th></th>
-    <th>基于 MMCV 执行器的配置文件概览 </th>
-    <th>基于 MMEngine 执行器的配置文件概览</th>
+    <th>基于 MMCV 执行器的 default_runtime.py </th>
+    <th>基于 MMEngine 执行器的 default_runtime.py</th>
+  </tr>
 <tbody>
 <tr>
-  <td> default_runtime.py </td>
   <td valign="top">
 
 ```python
@@ -82,9 +81,17 @@ resume = False
 ```
 
 </td>
-</tr>
+</thead>
+</table>
+
+<table class="docutils">
+<thead>
+  <tr>
+    <th>基于 MMCV 执行器的 scheduler.py </th>
+    <th>基于 MMEngine 执行器的 scheduler.py</th>
+    </tr>
+<tbody>
 <tr>
-  <td> scheduler.py </td>
   <td valign="top">
 
 ```python
@@ -136,9 +143,16 @@ auto_scale_lr = dict(enable=False, base_batch_size=16)
 ```
 
 </td>
-</tr>
-<tr>
-<td> coco_detection.py </td>
+</thead>
+</table>
+
+<table class="docutils">
+<thead>
+  <tr>
+    <th>基于 MMCV 执行器的 coco_detection.py </th>
+    <th>基于 MMEngine 执行器的 coco_detection.py</th>
+<tbody>
+
 <td valign="top">
 
 ```python
@@ -258,7 +272,6 @@ test_evaluator = val_evaluator
 ```
 
 </td>
-
 </tr>
 </thead>
 </table>
@@ -274,12 +287,10 @@ MMEngine 中的执行器提供了更多可自定义的部分，包括训练、�
 <table class="docutils">
 <thead>
   <tr>
-    <th></th>
-    <th>基于 MMCV 执行器的训练启动脚本 </th>
-    <th>基于 MMEngine 执行器的训练启动脚本</th>
+    <th>基于 MMCV 执行器的 tools/train.py </th>
+    <th>基于 MMEngine 执行器的 tools/train.py</th>
 <tbody>
 <tr>
-  <td> tools/train.py </td>
   <td>
 
 ```python
@@ -404,7 +415,7 @@ train_detector(
 ```
 
 </td>
-  <td valign="top">
+<td valign="top">
 
 ```python
 args = parse_args()
@@ -472,9 +483,17 @@ runner.train()
 
 </td>
 </tr>
+</thead>
+</table>
+
+<table class="docutils">
+<thead>
+  <tr>
+    <th>基于 MMCV 执行器的 apis/train.py </th>
+    <th>基于 MMEngine 执行器的 apis/train.py</th>
+<tbody>
 <tr>
-  <td> apis/train.py </td>
-  <td>
+<td>
 
 ```python
 def init_random_seed(...):
@@ -595,7 +614,7 @@ def train_detector(model,
 ```
 
 </td>
-  <td valign="top">
+<td valign="top">
 
 ```python
 # `apis/train.py` is removed in `mmengine`
