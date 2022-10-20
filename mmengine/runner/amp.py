@@ -67,11 +67,11 @@ def autocast(device_type: Optional[str] = None,
     """
     # If `enabled` is True, enable an empty context and all calculations
     # are performed under fp32.
-    assert digit_version(TORCH_VERSION) >= digit_version('1.5.0'), (
+    assert 'parrots' == TORCH_VERSION or digit_version(TORCH_VERSION) >= digit_version('1.5.0'), (
         'The minimum pytorch version requirements of mmengine is 1.5.0, but '
         f'got {TORCH_VERSION}')
 
-    if (digit_version('1.5.0') <= digit_version(TORCH_VERSION) <
+    if ('parrots' == TORCH_VERSION or digit_version('1.5.0') <= digit_version(TORCH_VERSION) <
             digit_version('1.10.0')):
         # If pytorch version is between 1.5.0 and 1.10.0, the default value of
         # dtype for `torch.cuda.amp.autocast` is torch.float16.
