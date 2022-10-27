@@ -166,9 +166,15 @@ class InstanceData(BaseDataElement):
             item = np.array(item)
         if isinstance(item, np.ndarray):
             item = torch.from_numpy(item)
-        assert isinstance(
-            item, (str, slice, int, torch.LongTensor, torch.cuda.LongTensor,
-                   torch.BoolTensor, torch.cuda.BoolTensor))
+        if 'parrots' == torch.__version__:
+            assert isinstance(
+                item, (str, slice, int, torch.LongTensor, torch.cuda.LongTensor,
+                    torch.cuda.IntTensor, torch.IntTensor,
+                    torch.BoolTensor, torch.cuda.BoolTensor))
+        else:
+            assert isinstance(
+                item, (str, slice, int, torch.LongTensor, torch.cuda.LongTensor,
+                    torch.BoolTensor, torch.cuda.BoolTensor))
 
         if isinstance(item, str):
             return getattr(self, item)
