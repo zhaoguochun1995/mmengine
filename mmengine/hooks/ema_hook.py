@@ -210,6 +210,9 @@ class EMAHook(Hook):
         ema_state = checkpoint['ema_state_dict']
         for k in ema_state:
             if k[:7] == 'module.':
+                if k[7:] not in model_state:
+                    print(f"{k[7:]} not in model_state")
+                    continue
                 tmp = ema_state[k]
                 ema_state[k] = model_state[k[7:]]
                 model_state[k[7:]] = tmp
