@@ -390,7 +390,7 @@ def _broadcast_object_list(object_list: List[Any],
     that all objects in ``object_list`` must be picklable in order to be
     broadcasted.
     """
-    if torch_dist.distributed_c10d._rank_not_in_group(group):
+    if 'parrots' != torch.__version__ and torch_dist.distributed_c10d._rank_not_in_group(group):
         return
 
     my_rank = get_rank()

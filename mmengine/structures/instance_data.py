@@ -168,6 +168,7 @@ class InstanceData(BaseDataElement):
             item = torch.from_numpy(item)
         assert isinstance(
             item, (str, slice, int, torch.LongTensor, torch.cuda.LongTensor,
+                   torch.IntTensor, torch.cuda.IntTensor,
                    torch.BoolTensor, torch.cuda.BoolTensor))
 
         if isinstance(item, str):
