@@ -19,9 +19,8 @@ def digit_version(version_str: str, length: int = 4):
     Returns:
         tuple[int]: The version info in digits (integers).
     """
-    import torch
-    if 'parrots' == torch.__version__ and version_str == 'parrots':
-        return tuple(1, 5, 1)
+    if version_str == 'parrots':
+        return digit_version(version_str.version.split('+')[0][:-2])
     assert 'parrots' not in version_str
     version = parse(version_str)
     assert version.release, f'failed to parse version {version_str}'
