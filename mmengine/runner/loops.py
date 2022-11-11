@@ -105,6 +105,10 @@ class EpochBasedTrainLoop(BaseLoop):
 
         self.runner.call_hook('after_train_epoch')
         self._epoch += 1
+        if torch.__version__ == 'parrots':
+            import parrots
+            parrots.runtimeconfig.host_memman.empty_cache()
+	
 
     def run_iter(self, idx, data_batch: Sequence[dict]) -> None:
         """Iterate one min-batch.
