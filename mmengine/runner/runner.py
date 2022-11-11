@@ -1366,7 +1366,7 @@ class Runner:
             init_fn = None
 
         # `persistent_workers` requires pytorch version >= 1.7
-        if ('persistent_workers' in dataloader_cfg
+        if ('parrots' != TORCH_VERSION and 'persistent_workers' in dataloader_cfg
                 and digit_version(TORCH_VERSION) < digit_version('1.7.0')):
             warnings.warn('`persistent_workers` is only available when '
                           'pytorch version >= 1.7')

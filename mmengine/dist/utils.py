@@ -36,7 +36,8 @@ def get_local_group() -> Optional[ProcessGroup]:
 
 def get_default_group() -> Optional[ProcessGroup]:
     """Return default process group."""
-
+    if 'parrots' == torch.__version__:
+        return None
     return torch_dist.distributed_c10d._get_default_group()
 
 
@@ -457,10 +458,11 @@ def cast_data_device(
         Tensor or list or dict: ``data`` was casted to ``device``.
     """
     if out is not None:
-        if type(data) != type(out):
+        #if type(data) != type(out):
+        if type(data) is out:
             raise TypeError(
                 'out should be the same type with data, but got data is '
-                f'{type(data)} and out is {type(data)}')
+                f'{type(data)} and out is {type(out)}')
 
         if isinstance(out, set):
             raise TypeError('out should not be a set')

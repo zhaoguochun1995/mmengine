@@ -390,7 +390,7 @@ def _broadcast_object_list(object_list: List[Any],
     that all objects in ``object_list`` must be picklable in order to be
     broadcasted.
     """
-    if torch_dist.distributed_c10d._rank_not_in_group(group):
+    if 'parrots' != torch.__version__ and torch_dist.distributed_c10d._rank_not_in_group(group):
         return
 
     my_rank = get_rank()
@@ -504,7 +504,7 @@ def broadcast_object_list(data: List[Any],
         if group is None:
             group = get_default_group()
 
-        if digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
+        if 'parrots' != TORCH_VERSION and digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
             torch_dist.broadcast_object_list(data, src, group)
         else:
             _broadcast_object_list(data, src, group)
@@ -564,7 +564,7 @@ def all_reduce_dict(data: Dict[str, Tensor],
         tensor_shapes = [data[k].shape for k in keys]
         tensor_sizes = [data[k].numel() for k in keys]
 
-        if digit_version(TORCH_VERSION) == digit_version('1.5.0'):
+        if 'parrots' == TORCH_VERSION or digit_version(TORCH_VERSION) == digit_version('1.5.0'):
             # `torch.cat` in torch1.5 can not concatenate different types so
             # we fallback to convert them all to float type.
             flatten_tensor = torch.cat(
@@ -715,7 +715,7 @@ def all_gather_object(data: Any,
 
     gather_list = [None] * world_size
 
-    if digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
+    if 'parrots' != TORCH_VERSION and digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
         torch_dist.all_gather_object(gather_list, data, group)
     else:
         _all_gather_object(gather_list, data, group)
@@ -867,7 +867,7 @@ def gather_object(data: Any,
 
     gather_list = [None] * world_size if get_rank(group) == dst else None
 
-    if digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
+    if 'parrots' != TORCH_VERSION and digit_version(TORCH_VERSION) >= digit_version('1.8.0'):
         torch_dist.gather_object(data, gather_list, dst, group)
     else:
         _gather_object(data, gather_list, dst, group)
