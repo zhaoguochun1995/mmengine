@@ -195,8 +195,6 @@ class BaseModel(BaseModule):
         if kwargs and 'npu' in str(kwargs.get('device', '')):
             kwargs['device'] = kwargs['device'].replace(
                 'npu', torch.npu.native_device)
-        #import pdb
-        #pdb.set_trace()
         if torch.__version__ == 'parrots':
             device = args[0]
         else:
