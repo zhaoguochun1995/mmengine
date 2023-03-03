@@ -2268,7 +2268,7 @@ class Runner:
         runtime_env.update(self._randomness_cfg)
         runtime_env['Distributed launcher'] = self._launcher
         runtime_env['Distributed training'] = self._distributed
-        runtime_env['GPU number'] = self._world_size
+        runtime_env['Device number'] = self._world_size
 
         env_info = '\n    ' + '\n    '.join(f'{k}: {v}'
                                             for k, v in env.items())

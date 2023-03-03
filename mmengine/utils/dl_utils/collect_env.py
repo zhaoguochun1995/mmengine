@@ -15,7 +15,11 @@ from .parrots_wrapper import TORCH_VERSION, get_build_config, is_rocm_pytorch
 
 def _get_cuda_home():
     if TORCH_VERSION == 'parrots':
-        from parrots.utils.build_extension import CUDA_HOME
+        import parrots
+        if parrots.base.use_cuda:
+            from parrots.utils.build_extension import CUDA_HOME
+        else:
+            return None
     else:
         if is_rocm_pytorch():
             from torch.utils.cpp_extension import ROCM_HOME
@@ -53,7 +57,7 @@ def collect_env():
     env_info['Python'] = sys.version.replace('\n', '')
 
     cuda_available = torch.cuda.is_available()
-    env_info['CUDA available'] = cuda_available
+    env_info['Device available'] = cuda_available
 
     env_info['numpy_random_seed'] = np.random.get_state()[1][0]
 
@@ -62,10 +66,11 @@ def collect_env():
         for k in range(torch.cuda.device_count()):
             devices[torch.cuda.get_device_name(k)].append(str(k))
         for name, device_ids in devices.items():
-            env_info['GPU ' + ','.join(device_ids)] = name
+            env_info['Device' + ' ' + ','.join(device_ids)] = name
 
         CUDA_HOME = _get_cuda_home()
-        env_info['CUDA_HOME'] = CUDA_HOME
+        if CUDA_HOME is not None:
+            env_info['CUDA_HOME'] = CUDA_HOME
 
         if CUDA_HOME is not None and osp.isdir(CUDA_HOME):
             if CUDA_HOME == '/opt/rocm':
